@@ -90,3 +90,30 @@
   }
 }
 
+/* catecory Menu */
+.categoryList {
+	margin: -10px;
+}
+.categoryList .ui-btn-text {
+	font-size: 80%;
+}
+
+.categoryList .ui-btn-inner {
+	padding-left: 5px;
+	padding-right: 5px;
+}
+
+.categoryList .ui-btn {
+	margin: 5px;
+}
+
+/* post Page */
+.toukouArea label {
+	font-size: 80%;
+	font-weight: bold;
+}
+
+.toukouArea textarea.ui-input-text {
+	height: 150px;
+	margin-bottom: 20px;
+}
