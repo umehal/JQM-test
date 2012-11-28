@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>EMホーム</title>
+    <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/jquery.mobile/1.1.1/jquery.mobile-1.1.1.min.css" />
+    <link rel="stylesheet" href="htmls/my.css">
+    <style>
+      /* App custom styles */
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js">
+    </script>
+    <script src="https://ajax.aspnetcdn.com/ajax/jquery.mobile/1.1.1/jquery.mobile-1.1.1.min.js">
+    </script>
+    <script src="htmls/my.js"></script>
+  </head>
+  <body>
+    <!--ホーム-->
+    <div data-role="page" id="home">
+      <div id="homeTitle" data-role="header">
+        <h4 id="homeTitleLabel">
+          みんなの声
+        </h4>
+      </div>
+      <div data-role="content">
+        <div class='rankingList'>
+          <ul data-role="listview" data-divider-theme="b" data-inset="false">
+            <li data-role="list-divider" role="heading">ランキング</li>
+            <li data-theme="c"><a href="#view" data-transition="slide">ランキング１<span class="ui-li-count">123</span></a></li>
+            <li data-theme="c"><a href="#view" data-transition="slide">ランキング２<span class="ui-li-count">123</span></a></li>
+            <li data-theme="c"><a href="#view" data-transition="slide">ランキング３<span class="ui-li-count">123</span></a></li>
+            <li data-theme="c"><a href="#rankingView" data-transition="slide">もっと見る</a></li>
+          </ul>
+        </div>
+        <br><br>
+        <div class='categoryList'>
+          <fieldset class='ui-grid-a'>
+            <div class='ui-block-a'><a href="#list" data-role="button" data-corners="false" data-transition="slide">おもしろい話</a></div>
+            <div class='ui-block-b'><a href="#list" data-role="button" data-corners="false" data-transition="slide">深いい話</a></div>
+            <div class='ui-block-a'><a href="#list" data-role="button" data-corners="false" data-transition="slide">かなしい話</a></div>
+            <div class='ui-block-b'><a href="#list" data-role="button" data-corners="false" data-transition="slide">口コミ</a></div>
+            <div class='ui-block-a'><a href="#list" data-role="button" data-corners="false" data-transition="slide">今ほしいもの</a></div>
+            <div class='ui-block-b'><a href="#list" data-role="button" data-corners="false" data-transition="slide">2013年の抱負！</a></div>
+          </fieldset>
+        </div>
+        <br>
+        <center>
+        <div class='submit'>
+          <a href="#toukou" data-role="button" data-inline="true" data-theme="b" data-transition="slide">投稿する</a>
+          <a href="#" data-role="button" data-inline="true" data-theme="e" data-transition="slide">会員登録</a>
+        </div>
+        </center>
+      </div>
+      <div class="copyright"><center>
+        Copyright(c) 2012 eAccess Ltd.
+      </center></div>
+    </div>
+    <!--ホームおわり-->
+
+    <!--新規投稿-->
+    <div data-role="page" id="toukou">
+      <div class="postTitle" data-role="header">
+        <h1 class="postTitleLabel">コメントの投稿</h1>
+        <a href="#" data-rel="back" class="btnStyle3" data-icon="arrow-l" data-role="button">戻る</a>
+      </div>
+      <div data-role="content">
+        <div class="toukouArea">
+          <form action="#" method="post"enctype="multipart/form-data" name="newComment">
+
+          <label for="selectmenu1">
+            カテゴリ
+          </label>
+          <center>
+          <select id="select" data-theme="c" data-native-menu="false">
+            <option value="omoshiroi">
+              おもしろい話
+            </option>
+            <option value="fukaii">
+              深いい話
+            </option>
+            <option value="kanashii">
+              かなしい話
+            </option>
+            <option value="kuchikomi">
+              口コミ
+            </option>
+            <option value="hoshiimono">
+              今ほしいもの
+            </option>
+            <option value="2013">
+              2013年の抱負！
+            </option>
+          </select>
+          </center>
+
+          <label for="title">タイトル</label>
+          <input type="text" id="title" name = "title"/><br/>
+          <label for="body">本文</label>
+          <textarea name="body" id="body" placeholder=""></textarea>
+
+          <a href="#" id="btn2" onClick="this.disabled = true;" data-theme="b" data-role="button" class="btnStyle2">投稿する</a>
+          </form>
+        </div>
+      </div>
+      <div class="copyright"><center>
+        Copyright(c) 2012 eAccess Ltd.
+      </center></div>
+    </div>
+    <!-- 新規投稿おわり -->
+
+    <!--お気に入り管理-->
+    <div data-role="page" id="list">
+      <div data-role="header" class="listTitle">
+         <h4 id="listTitleLabel"></h4>
+        <a href="#" data-rel="back" class="btnStyle3" data-icon="arrow-l" data-role="button">戻る</a>
+      </div>
+      <div class="listArea">
+        <ul id="listview" data-role="listview"></ul>
+        <br>
+          <a href="#" id="moreRead" class="moreRead" data-role="button" data-icon="arrow-d" style="display:none">もっとみる</a>
+      </div>
+      <div class="copyright"><center>
+        Copyright(c) 2012 eAccess Ltd.
+      </center></div>
+    </div>
+    <!--お気に入り管理おわり-->
+
+  </body>
+</html>
