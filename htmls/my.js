@@ -3,6 +3,14 @@ jQuery.postJSON = function(url, data, callback) {
 　　jQuery.post(url, data, callback, "json");
 };
 
+//ホームの投稿ボタン処理
+$(function() { 
+  $("#homeListButton").live("click", function(){
+    location.href = "#list?&"
+                  + this.name;
+  });
+});
+
 //新規投稿処理
 $(function() {
   var flag = 0;
@@ -43,58 +51,63 @@ $(function() {
 //新規投稿処理おわり
 
 //list処理
+var resJson = [];
 $(function() { 
   $(document).delegate("#list", "pagebeforeshow", function(){
+    var categoryHash = document.location.hash;
+    var category = categoryHash.split("&");
+  
     $("#listView").html('');
     var icount = 0;
     var lim = 10;
     var off = 0;
-    var cat = 2013;
-    loadCategoryList(cat);
+    var cat = category[1];
+    loadCategoryList(cat,lim,off);
+    icount = resJson.length;
     if(icount < 9){
       document.getElementById('moreRead').style.display = "none";
     }else{
       document.getElementById('moreRead').style.display = "block";
     }
+    //switch cat
   });
+  function loadCategoryList(cat,lim,off){
+    url = "http://em-home.appspot.com/getCategoryCommentList";
+    req = {
+      "name":"test",
+      "category":cat,
+      "limit":lim,
+      "offset":off,
+      "callback":"?"
+    };
+    $.post(url, req, callback,"json");
+    var callback = function(json){
+      if(json == 0){
+        $('#listView').html("<p>まだコメントがありません</p>");
+      }
+      $.each(json, function(i, item) {
+        resJson[i] = this;
+        message = '<a href="#" data-transition="slide"><table class="comInfo"><tr>'
+        + '<td><p class="date">'
+        + formatDate(this.date.isoformat)
+        + '</p><p class="comTitle"><h4>'
+        + this.title
+        + '</h4><p class="NI_data">読了目安:'
+        + this.body
+        + '</p><p 分'
+        + '　閲覧数:'
+        + this.views
+        + '　★'
+        + this.bookmark
+        + '</p></td></tr></table></a> ';
+        items++;
+        //str = str + message;
+        $('<li>').html(message).appendTo('#listView');
+        message = "";
+      });
+    };
+  };
 });
-
-function loadCategoryList(cat){
-  url = "https://em-home.appspot.com/getCategoryCommentList";
-  req = {
-    "category":cat,
-    "limit":lim,
-    "offset":off,
-    "callback":"?"
-  };
-  $.post(url, req, callback,"json");
-  var callback = function(json){
-    if(json == 0){
-      $('#listView').html("<p>まだコメントがありません</p>");
-    }
-    $.each(json, function(i, item) {
-      resJson[i] = this;
-      icount++;
-      message = '<a href="#" data-transition="slide"><table class="comInfo"><tr>'
-      + '<td><p class="date">'
-      + formatDate(this.date.isoformat)
-      + '</p><p class="comTitle"><h4>'
-      + this.title
-      + '</h4><p class="NI_data">読了目安:'
-      + this.body
-      + '</p><p 分'
-      + '　閲覧数:'
-      + this.views
-      + '　★'
-      + this.bookmark
-      + '</p></td></tr></table></a> ';
-      items++;
-      //str = str + message;
-      $('<li>').html(message).appendTo('#listView');
-      message = "";
-    });
-  };
-};
 //list終わり
 
 //時間変換のファンクション
