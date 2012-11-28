@@ -49,7 +49,7 @@ $(function() {
     var icount = 0;
     var lim = 10;
     var off = 0;
-    var cat = 2013
+    var cat = 2013;
     loadCategoryList(cat);
     if(icount < 9){
       document.getElementById('moreRead').style.display = "none";
@@ -57,8 +57,6 @@ $(function() {
       document.getElementById('moreRead').style.display = "block";
     }
   });
-
-
 });
 
 function loadCategoryList(cat){
@@ -97,91 +95,6 @@ function loadCategoryList(cat){
     });
   };
 };
-  
-  var favMult = function(json){
-    var multiNovel = json;
-    multiNovel = multiNovel.replace(/\[0\]/g,'');
-    multiNovel = multiNovel.replace(/\]\[/g,',');
-
-    var json_all = JSON.parse(multiNovel);
-    $.each(json_all, function(i, item) {
-      bkmNovelsArray[i] = this.Novel_ID;
-      bkmNovelsTitleArray[i] = this.title;
-      bkmNovelsNameArray[i] = this.name;
-      bkmNovelsCaptionArray[i] = this.caption;
-      bkmNovelsDisplayNameArray[i] = this.displayName;
-      bkmNovelsImgArray[i] = this.img;
-      bkmNovelsNecTimeArray[i] = this.necTime;
-      bkmNovelsViewArray[i] = this.views;
-      bkmNovelsBkmArray[i] = this.bookmark;
-      if(this.img){
-        if(this.thumbnail){
-          message = '<a href="#" data-transition="slide"><table class="NovelInfo"><tr><td><div class="novelCover"><img src="https://flickplot.appspot.com/getImage?Image_ID='
-            + this.thumbnail
-            + '" /></div></td><td><p class="NI_name">'
-            + this.displayName
-            + '</p><h4>'
-            + titleShorten(this.title)
-              + '</h4><p class="NI_data">読了目安:'
-              + this.necTime
-              + '分'
-              + '　閲覧数:'
-              + this.views
-              + '　★'
-              + this.bookmark
-              + '</p></td></tr></table></a>';
-        }else{
-          if(this.img.slice(0, 4) == "http" || this.img.slice(0, 6) == "https:"){
-            message = '<a href="#" data-transition="slide"><table class="NovelInfo"><tr><td><div class="novelCover"><img src="'
-            + this.img
-            + '" /></div></td><td><p class="NI_name">'
-            + this.displayName
-            + '</p><h4>'
-            + titleShorten(this.title)
-              + '</h4><p class="NI_data">読了目安:'
-              + this.necTime
-              + '分'
-              + '　閲覧数:'
-              + this.views
-              + '　★'
-              + this.bookmark
-              + '</p></td></tr></table></a>';
-          }else{
-            message = '<a href="#" data-transition="slide"><table class="NovelInfo"><tr><td><div class="novelCover"><img src="https://flickplot.appspot.com/getImage?Image_ID='
-            + this.img
-            + '" /></div></td><td><p class="NI_name">'
-            + this.displayName
-            + '</p><h4>'
-            + titleShorten(this.title)
-              + '</h4><p class="NI_data">読了目安:'
-              + this.necTime
-              + '分'
-              + '　閲覧数:'
-              + this.views
-              + '　★'
-              + this.bookmark
-              + '</p></td></tr></table></a>';
-          }
-        }
-      }else{
-            message = '<a href="#" data-transition="slide"><table class="NovelInfo"><tr><td><div class="novelCover"><img src="htmls/img/nothumb.png" /></div></td><td><p class="NI_name">'
-        + this.displayName
-          + '</p><h4>'
-          + titleShorten(this.title)
-          + '</h4><p class="NI_data">読了目安:'
-            + this.necTime
-            + '分'
-            + '　閲覧数:'
-            + this.views
-            + '　★'
-            + this.bookmark
-          + '</p></td></tr></table></a>';
-      }
-      $('<li>').html(message).appendTo('#myBookmarks');
-      message = "";
-    });
-  };
-});
 //list終わり
 
 //時間変換のファンクション
