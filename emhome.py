@@ -249,11 +249,11 @@ class getCategoryCommentList(BaseSessionRequestHandler):
       username = username.decode('UTF-8')
       if limit:
         if offset:
-          comment = db.GqlQuery("SELECT * FROM Comments WHERE name = :1 ORDER BY date DESC",category).fetch(limit=int(limit),offset=int(offset))
+          comment = db.GqlQuery("SELECT * FROM Comments WHERE category = :1 ORDER BY date DESC",category).fetch(limit=int(limit),offset=int(offset))
         else:
-          comment = db.GqlQuery("SELECT * FROM Comments WHERE name = :1 ORDER BY date DESC",category)
+          comment = db.GqlQuery("SELECT * FROM Comments WHERE category = :1 ORDER BY date DESC",category).fetch(limit=int(limit),offset=0)
       else:
-        comment = db.GqlQuery("SELECT * FROM Comments WHERE name = :1 ORDER BY date DESC",category) 
+        comment = db.GqlQuery("SELECT * FROM Comments WHERE category = :1 ORDER BY date DESC",category) 
       if comment:
         res = gqljson.GqlEncoder(ensure_ascii=False).encode(comment)
       else:

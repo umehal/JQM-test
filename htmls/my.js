@@ -3,11 +3,26 @@ jQuery.postJSON = function(url, data, callback) {
 　　jQuery.post(url, data, callback, "json");
 };
 
-//ホームの投稿ボタン処理
+//JQM設定
+$(document).bind("mobileinit", function(){
+  $.mobile.page.prototype.options.backBtnText = "戻る";
+  $.mobile.loader.prototype.options.text = "読み込み中..."
+  //$.mobile.loader.prototype.options. = "ページの取得に失敗しました";
+  $.mobile.loader.prototype.options.theme = "b"
+  $.mobile.loader.prototype.options.textVisible = true;
+  $.mobile.ajaxEnabled = true;
+  $.mobile.defaultTransition = "slide";
+});
+
+//ホームのリストボタン処理
 $(function() { 
   $("#homeListButton").live("click", function(){
-    location.href = "#list?&"
-                  + this.name;
+    //var next = $("#list");
+    //location.href = "#list?&" + this.name;
+    localStorage['tempDB'] = this.name;
+    $.mobile.changePage("#list",{
+      transition: "slide",
+    });
   });
 });
 
@@ -27,6 +42,7 @@ $(function() {
           "category":$("#select").val(),
           "callback":"?"
         };
+        //$.mobile.showPageLadingMsg();
         $.post(url, req, callback);
       }
     }
@@ -35,6 +51,7 @@ $(function() {
     }
   });
   var callback = function(json){
+    //$.mobile.hidePageLadingMsg();
     if(json == "0"){
       alert("投稿に失敗しました¥nやり直してください");
       flag = 0;
@@ -54,14 +71,14 @@ $(function() {
 var resJson = [];
 $(function() { 
   $(document).delegate("#list", "pagebeforeshow", function(){
-    var categoryHash = document.location.hash;
-    var category = categoryHash.split("&");
-  
+    //var categoryHash = document.location.hash;
+    //var category = categoryHash.split("&");
+    //history.replaceState = "list?&" + localStorage['tempDB'];
     $("#listView").html('');
     var icount = 0;
     var lim = 10;
     var off = 0;
-    var cat = category[1];
+    var cat = localStorage['tempDB'];//category[1];
     loadCategoryList(cat,lim,off);
     icount = resJson.length;
     if(icount < 9){
@@ -69,7 +86,27 @@ $(function() {
     }else{
       document.getElementById('moreRead').style.display = "block";
     }
-    //switch cat
+    switch(cat){
+      case "omoshiroi":
+        $("#listHeaderLabel").html('おもしろい話');
+        break;
+      case "fukaii":
+        $("#listHeaderLabel").html('深いい話');
+        break;
+      case "kanashii":
+        $("#listHeaderLabel").html('かなしい話');
+        break;
+      case "kuchikomi":
+        $("#listHeaderLabel").html('口コミ');
+        break;
+      case "hoshiimono":
+        $("#listHeaderLabel").html('今ほしいもの');
+        break;
+      case "2013":
+        $("#listHeaderLabel").html('2013年の抱負！');
+        break;
+    }
+    //$.mobile.showPageLadingMsg();
   });
   function loadCategoryList(cat,lim,off){
     url = "http://em-home.appspot.com/getCategoryCommentList";
@@ -81,47 +118,91 @@ $(function() {
       "callback":"?"
     };
     $.post(url, req, callback,"json");
-    var callback = function(json){
-      if(json == 0){
-        $('#listView').html("<p>まだコメントがありません</p>");
-      }
-      $.each(json, function(i, item) {
-        resJson[i] = this;
-        message = '<a href="#" data-transition="slide"><table class="comInfo"><tr>'
-        + '<td><p class="date">'
-        + formatDate(this.date.isoformat)
-        + '</p><p class="comTitle"><h4>'
-        + this.title
-        + '</h4><p class="NI_data">読了目安:'
-        + this.body
-        + '</p><p 分'
-        + '　閲覧数:'
-        + this.views
-        + '　★'
-        + this.bookmark
-        + '</p></td></tr></table></a> ';
-        items++;
-        //str = str + message;
-        $('<li>').html(message).appendTo('#listView');
-        message = "";
-      });
-    };
   };
+  var callback = function(json){
+    //$.mobile.hidePageLadingMsg();
+    if(json == 0){
+      $('#listView').html("<p>まだコメントがありません</p>");
+      return;
+    }
+    $.each(json, function(i, item) {
+      resJson[i] = this;
+      bodyText = this.body.replace(/\r\n/g,"\n");
+      bodyText = bodyText.replace(/\r/g,"\n");
+      caption = bodyText.split("\n");
+      if(caption.length < 3){
+        bodyText = bodyText.replace(/\n/g,"<br>");
+      }
+      else{
+        bodyText = caption[0] + "<br>" + caption[1] + "　...続きあり";
+      }
+      message = '<a href="" data-transition="slideup" data-rel="dialog"><table class="comInfo"><tr>'
+      + '<td><p class="comTitle"><h4>'
+      + this.title
+      + '</h4><p class="comBody">'
+      + bodyText//this.body
+      + '</p><p class="comData">閲覧数:'
+      + this.views
+      + '　★'
+      + this.bookmark
+      + '　日時:'
+      + formatDate(this.date.isoformat)
+      + '</p></td></tr></table></a> ';
+      //str = str + message;
+      $('<li>').html(message).appendTo('#listView');
+      message = "";
+    });
+  };
+  $(".comInfo").live("click", function(){
+    localStorage['tempJSON'] = resJson[0];
+    $.mobile.changePage("#commentPage",{
+      transition:"slideup",
+      role:"dialog"
+    });
+    //location.href = "#commentPage";
+  });
 });
 //list終わり
+
+//popup処理
+$(function() { 
+  $(document).delegate("#commentPage", "pagebeforeshow", function(){
+    var json = localStorage['tempJSON'];
+    
+    /*
+    json = $.parseJSON(json);
+    $("#commentHeaderLabel").html('');
+    $("#commentTitle").html('');
+    $("#commentBodyText").html('');
+    $("#commentHeaderLabel").html(json.title);
+    $("#commentTitle").html(json.title);
+    $("#commentBodyText").html(json.body);
+    */
+  });
+});
+//popup処理おわり
 
 //時間変換のファンクション
 function utc2jst(utc) {
   return new Date(utc.getTime() + 9*60*60*1000);
 } 
+function W3CDTFtoDate(w3cdtf) {
+  var m = w3cdtf.match(/(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})/);
+  var date = new Date(m[1], m[2] - 1, m[3], m[4], m[5], m[6]);
+  date.setTime(date.getTime() + 9 * 60 * 60 * 1000);
+  return date;
+};
 function formatDate(date){
   var userAgent = window.navigator.userAgent.toLowerCase();
   var appVersion = window.navigator.appVersion.toLowerCase();
   jst = date;
+  date = W3CDTFtoDate(jst);
   if (userAgent.indexOf("firefox") > -1) {
     jst = utc2jst(date);
   }
-  var created_at = date.toString().split(" ");
+  var create = date.toString().replace(/:/g, " ");
+  var created_at = create.split(" ");
+  
   if(created_at[1] == "Jan") created_at[1] = "01";
   if(created_at[1] == "Feb") created_at[1] = "02";
   if(created_at[1] == "Mar") created_at[1] = "03";
@@ -136,9 +217,11 @@ function formatDate(date){
   if(created_at[1] == "Dec") created_at[1] = "12";
   
   var post_date  = String(created_at[3]) + "/"
-    + String(created_at[1]) + "/"
-    + String(created_at[2]) + " "
-    + String(created_at[4]);
+           + String(created_at[1]) + "/"
+           + String(created_at[2]) + " "
+           + String(created_at[4]) + ":"
+           + String(created_at[5]);
+
   return String(post_date);
 };
 //時間変換のファンクションおわり
