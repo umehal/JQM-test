@@ -10,16 +10,59 @@ $(document).bind("mobileinit", function(){
   //$.mobile.loader.prototype.options. = "ページの取得に失敗しました";
   $.mobile.loader.prototype.options.theme = "b"
   $.mobile.loader.prototype.options.textVisible = true;
-  $.mobile.ajaxEnabled = true;
+  $.mobile.ajaxEnabled = false;
   $.mobile.defaultTransition = "slide";
 });
 
+var global = {};
 //ホームのリストボタン処理
 $(function() { 
+  $(document).delegate("#home", "pagebeforeshow", function(){
+    loadRankingList(3,0);
+    loadBookmarkRankingList(3,0);
+  });
+  function loadRankingList(lim,off){
+    url = "http://em-home.appspot.com/getViewRanking";
+    req = {
+      "limit":lim,
+      "offset":off,
+      "callback":"?"
+    };
+    $.post(url, req, VWcallback,"json");
+  };
+  var VWcallback = function(json){
+    //var a = json[0].rankingViews;
+    //alert(a)
+    $("#viewRank1").html('');
+    $("#viewRank2").html('');
+    $("#viewRank3").html('');
+    $("#viewRank1").html(json[0].title + '(' + json[0].rankingViews + ')');
+    $("#viewRank2").html(json[1].title + '(' + json[1].rankingViews + ')');
+    $("#viewRank3").html(json[2].title + '(' + json[2].rankingViews + ')');
+  };
+  function loadBookmarkRankingList(lim,off){
+    url = "http://em-home.appspot.com/getBookmarkRanking";
+    req = {
+      "limit":lim,
+      "offset":off,
+      "callback":"?"
+    };
+    $.post(url, req, BKcallback,"json");
+  };
+  var BKcallback = function(json){
+    $("#viewBRank1").html('');
+    $("#viewBRank2").html('');
+    $("#viewBRank3").html('');
+    $("#viewBRank1").html(json[0].title + '(' + json[0].rankingBookmark + ')');
+    $("#viewBRank2").html(json[1].title + '(' + json[1].rankingBookmark + ')');
+    $("#viewBRank3").html(json[2].title + '(' + json[2].rankingBookmark + ')');
+  };
+
   $("#homeListButton").live("click", function(){
     //var next = $("#list");
     //location.href = "#list?&" + this.name;
-    localStorage['tempDB'] = this.name;
+    //localStorage['tempDB'] = this.name;
+    global.tempCategory = this.name;
     $.mobile.changePage("#list",{
       transition: "slide",
     });
@@ -68,24 +111,16 @@ $(function() {
 //新規投稿処理おわり
 
 //list処理
-var resJson = [];
 $(function() { 
+  var resJson;
+  var bookmarkClick = 0;
+  var bookmarkCount;
   $(document).delegate("#list", "pagebeforeshow", function(){
-    //var categoryHash = document.location.hash;
-    //var category = categoryHash.split("&");
-    //history.replaceState = "list?&" + localStorage['tempDB'];
     $("#listView").html('');
-    var icount = 0;
     var lim = 10;
     var off = 0;
-    var cat = localStorage['tempDB'];//category[1];
+    var cat = global.tempCategory;
     loadCategoryList(cat,lim,off);
-    icount = resJson.length;
-    if(icount < 9){
-      document.getElementById('moreRead').style.display = "none";
-    }else{
-      document.getElementById('moreRead').style.display = "block";
-    }
     switch(cat){
       case "omoshiroi":
         $("#listHeaderLabel").html('おもしろい話');
@@ -106,7 +141,6 @@ $(function() {
         $("#listHeaderLabel").html('2013年の抱負！');
         break;
     }
-    //$.mobile.showPageLadingMsg();
   });
   function loadCategoryList(cat,lim,off){
     url = "http://em-home.appspot.com/getCategoryCommentList";
@@ -120,13 +154,19 @@ $(function() {
     $.post(url, req, callback,"json");
   };
   var callback = function(json){
+    resJson = json;
+    var icount = json.length;
+    if(icount < 9 || icount == null){
+      document.getElementById('moreRead').style.display = "none";
+    }else{
+      document.getElementById('moreRead').style.display = "block";
+    }
     //$.mobile.hidePageLadingMsg();
     if(json == 0){
-      $('#listView').html("<p>まだコメントがありません</p>");
+      $('#listView').html('<p class="noData">まだコメントはありません</p>');
       return;
     }
     $.each(json, function(i, item) {
-      resJson[i] = this;
       bodyText = this.body.replace(/\r\n/g,"\n");
       bodyText = bodyText.replace(/\r/g,"\n");
       caption = bodyText.split("\n");
@@ -136,16 +176,15 @@ $(function() {
       else{
         bodyText = caption[0] + "<br>" + caption[1] + "　...続きあり";
       }
-      message = '<a href="" data-transition="slideup" data-rel="dialog"><table class="comInfo"><tr>'
-      + '<td><p class="comTitle"><h4>'
+      message = '<a href="#" data-transition="pop" data-rel="popup"><table class="comInfo"><tr><td><p class="comTitle">'
       + this.title
-      + '</h4><p class="comBody">'
+      + '<p class="comBody">'
       + bodyText//this.body
       + '</p><p class="comData">閲覧数:'
       + this.views
       + '　★'
       + this.bookmark
-      + '　日時:'
+      + '</p><p class="comTime">日時:'
       + formatDate(this.date.isoformat)
       + '</p></td></tr></table></a> ';
       //str = str + message;
@@ -154,33 +193,87 @@ $(function() {
     });
   };
   $(".comInfo").live("click", function(){
-    localStorage['tempJSON'] = resJson[0];
-    $.mobile.changePage("#commentPage",{
-      transition:"slideup",
-      role:"dialog"
-    });
-    //location.href = "#commentPage";
+    var index = $(".comInfo").index(this);
+    var json = resJson[index];
+    var bodyText = json.body.replace(/\r\n/g,"\n");
+    bodyText = bodyText.replace(/\r/g,"\n");
+    bodyText = bodyText.replace(/\n/g,"<br>");
+    viewCountup(json.com_ID);
+    json.views++;
+    //$("#commentHeaderLabel").html('');
+    $("#commentTitle").html('');
+    $("#commentBodyText").html('');
+    $("#commentViews").html('');
+    $("#commentBookmarks").html('');
+    //$("#commentHeaderLabel").html(json.title);
+    $("#commentTitle").html(json.title);
+    $("#commentBodyText").html(bodyText);
+    $("#commentViews").html("閲覧数: " + json.views);
+    $("#commentBookmarks").html("いいね: " + json.bookmark);
+    $("#commentPage").popup("open");
+    $("#likeButton").attr("name",json.com_ID);
+    bookmarkCount = json.bookmark;
   });
+  $("#closeButton").live("click", function(){
+    $( "#commentPage" ).popup( "close" )
+  });
+  $("#likeButton").live("click", function(){
+    if(bookmarkClick == 0){
+      bookmarkClick++;
+      bookmarkCountup(this.name);
+    }
+    else{
+      return;
+    }
+  });
+
+  function viewCountup(state){
+    url = "http://em-home.appspot.com/addView";
+    req = {
+      "com_ID":state,
+      "callback":"?"
+    };
+    $.post(url, req, callbackView);
+  }
+  var callbackView = function(){
+    //alert('viewカウント完了')
+  }
+  function bookmarkCountup(state){
+    url = "http://em-home.appspot.com/addBookmark";
+    req = {
+      "name":"test",
+      "com_ID":state,
+      "callback":"?"
+    };
+    $.post(url, req, callbackBookmark);
+  }
+  var callbackBookmark = function(res){
+    if(res == "SUCCEEDED"){
+      $("#commentBookmarks").html("いいね: " + (bookmarkCount+1));
+    }
+    else{
+      alert('「いいね！」は、ひとつの記事に対して一度だけです')
+    }
+    bookmarkClick = 0;
+  }
 });
 //list終わり
 
+/*
 //popup処理
 $(function() { 
   $(document).delegate("#commentPage", "pagebeforeshow", function(){
-    var json = localStorage['tempJSON'];
-    
-    /*
-    json = $.parseJSON(json);
+    var json = global.tempJson;
     $("#commentHeaderLabel").html('');
     $("#commentTitle").html('');
     $("#commentBodyText").html('');
     $("#commentHeaderLabel").html(json.title);
     $("#commentTitle").html(json.title);
     $("#commentBodyText").html(json.body);
-    */
   });
 });
 //popup処理おわり
+*/
 
 //時間変換のファンクション
 function utc2jst(utc) {

@@ -312,13 +312,13 @@ class incrementView(webapp.RequestHandler):
         viewNumInt = int(viewNum) + 1
         commentData.rankingViews = viewNumInt
         """
-        rankNum = commentData.rankingBookmark
+        rankNum = commentData.rankingViews
         rankNumInt = int(rankNum) + 1
-        commentData.rankingBookmark = viewNumInt
+        commentData.rankingViews = viewNumInt
         commentData.put()
       else:
         commentData.views = 1
-        commentData.rankingBookmark = 1
+        commentData.rankingViews = 1
         commentData.put()
 
 class addBookmark(BaseSessionRequestHandler):
@@ -399,25 +399,20 @@ class decrementBookmark(webapp.RequestHandler):
 class getViewRanking(webapp.RequestHandler):
   def post(self):
   
+    comment = Comments()#memcache.get('dailyViewRanking')
     limit = self.request.get('limit').encode('UTF-8')
     offset = self.request.get('offset').encode('UTF-8')
-    
-    comment = None#memcache.get('dailyViewRanking')
-    if comment is None:
-        comments = db.GqlQuery("SELECT * FROM Comments WHERE rankingViews > 0 ORDER BY rankingViews DESC LIMIT 100")
-        #comments = Comments.all().filter('publish = ', '1').filter('privacy = ', 'allview').order('-rankingViews').fetch(100)
-        #res = gqljson.GqlEncoder(ensure_ascii=False).encode(comments)
-        #memcache.add(key='dailyViewRanking', value=comments, time=100000)
-        comment = comments
+
+    comments = db.GqlQuery("SELECT * FROM Comments WHERE rankingViews != 0 ORDER BY rankingViews DESC LIMIT 50")
+    comment = comments
     if limit:
       if offset:
         comment = comment.fetch(limit=int(limit),offset=int(offset))
       else:
         comment = comment.fetch(limit=int(limit),offset=0)
     else:
-      comment = comment.fetch(limit=3,offset=0)
-      
-    if comment:   
+      comment = comment.fetch(limit=50,offset=0)
+    if comment:
       res = gqljson.GqlEncoder(ensure_ascii=False).encode(comment)
     else:
         res = "0"

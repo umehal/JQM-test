@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="format-fetection" content="telephone=no" />
     <title>EMホーム</title>
     <!-- <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/jquery.mobile/1.1.1/jquery.mobile-1.1.1.min.css" /> -->
     <link rel="stylesheet" href="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.css" />
@@ -27,13 +28,22 @@
         </h4>
       </div>
       <div data-role="content">
-        <div class='rankingList'>
+        <div class='viewRankingList'>
           <ul data-role="listview" data-divider-theme="b" data-inset="false">
-            <li data-role="list-divider" role="heading">ランキング</li>
-            <li data-theme="c"><a href="#view" data-transition="slide">ランキング１<span class="ui-li-count">123</span></a></li>
-            <li data-theme="c"><a href="#view" data-transition="slide">ランキング２<span class="ui-li-count">123</span></a></li>
-            <li data-theme="c"><a href="#view" data-transition="slide">ランキング３<span class="ui-li-count">123</span></a></li>
-            <li data-theme="c"><a href="#rankingView" data-transition="slide">もっと見る</a></li>
+            <li data-role="list-divider" role="heading">閲覧数ランキング</li>
+            <li data-theme="c"><a href="#view" data-transition="slide" id="viewRank1"></a></li>
+            <li data-theme="c"><a href="#view" data-transition="slide" id="viewRank2"></a></li>
+            <li data-theme="c"><a href="#view" data-transition="slide" id="viewRank3"></a></li>
+            <li data-theme="c" id="viewRankMore"><a href="#rankingView" data-transition="slide">もっと見る</a></li>
+          </ul>
+        </div>
+        <div class='bookmarkRankingList'>
+          <ul data-role="listview" data-divider-theme="b" data-inset="false">
+            <li data-role="list-divider" role="heading">いいねランキング</li>
+            <li data-theme="c"><a href="#view" data-transition="slide" id="viewBRank1"></a></li>
+            <li data-theme="c"><a href="#view" data-transition="slide" id="viewBRank2"></a></li>
+            <li data-theme="c"><a href="#view" data-transition="slide" id="viewBRank3"></a></li>
+            <li data-theme="c" id="viewRankMore"><a href="#rankingView" data-transition="slide">もっと見る</a></li>
           </ul>
         </div>
         <br><br>
@@ -121,34 +131,42 @@
         <a href="#" data-rel="back" class="btnStyle3" data-icon="back" data-role="button">戻る</a>
       </div>
       <div class="listArea">
-        <ul id="listView" data-role="listview"></ul>
+        <ul id="listView" data-role="listview">
+        </ul>
         <br>
           <a href="#" id="moreRead" class="moreRead" data-role="button" data-icon="arrow-d" style="display:none">もっとみる</a>
       </div>
       <div class="copyright"><center>
         Copyright(c) 2012 eAccess Ltd.
       </center></div>
+      <!--個別ページ-->
+      <div data-role="popup" data-transition="pop" id="commentPage">
+        <div data-role="header" class="commentHeader" data-position="inline" data-theme="c">
+           <h4 id="commentHeaderLabel">詳細</h4>
+          <!-- <a href="#" data-rel="back" class="btnStyle3" data-icon="arrow-l" data-role="button">戻る</a> -->
+        </div>
+        <div data-role="content" class="commentArea">
+          <h1 id="commentTitle">Title</h1>
+          <p id="commentName">＠投稿者名</p>
+          <br>
+            <p id="commentBodyText">Content<p>
+            <p id="commentData"><a id="commentViews">Views</a><a id="commentBookmarks">
+              Like</a><p>
+            <br>
+            <a href="#" id="closeButton" data-role="button" data-icon="back" data-theme="b" data-inline="true">戻る</a>
+            <a id="likeButton" data-role="button" data-icon="star" data-theme="e" data-inline="true">いいね！</a>
+          <!--
+          <div class="copyright"><center>
+            Copyright(c) 2012 eAccess Ltd.
+          </center></div>
+          -->
+        </div>
+      </div>
+      <!--個別ページおわり-->
     </div>
     <!--カテゴリコメント表示おわり-->
 
-    <!--個別ページ-->
-    <div data-role="page" id="commentPage">
-      <div data-role="header" class="commentHeader" data-position="inline">
-         <h4 id="commentHeaderLabel">ヘッダー</h4>
-        <!-- <a href="#" data-rel="back" class="btnStyle3" data-icon="arrow-l" data-role="button">戻る</a> -->
-      </div>
-      <div data-role="content" class="commentArea">
-        <h1 id="commentTitle">タイトルてすと</h1>
-        <br>
-          <p id="commentBodyText">中身のてすと<p>
-          <a href="#" id="closeButton" data-role="button" data-rel="back" data-icon="back" data-theme="b" data-inline="true">戻る</a>
-          <a href="#" id="likeButton" data-role="button" data-icon="star" data-theme="e" data-inline="true">いいね！</a>
-      </div>
-      <div class="copyright"><center>
-        Copyright(c) 2012 eAccess Ltd.
-      </center></div>
-    </div>
-    <!--カテゴリコメント表示おわり-->
+
 
 
   </body>
